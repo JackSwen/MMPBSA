@@ -1,0 +1,53 @@
+MMPBSA Calculation Pipeline (NAMD + NACCESS + Delphi)
+This repository contains a Bash script for performing MM/PBSA-like binding free energy calculations using snapshots from molecular dynamics trajectories.
+Main Features
+
+Extracts van der Waals (VDW) energies using NAMD (implicit solvent, GBIS)
+Calculates non-polar solvation term via SASA using NACCESS
+Computes polar solvation and Coulombic energies using Delphi (via pdb2pqr for PQR conversion)
+Processes multi-frame PDB trajectories (supports MODEL/ENDMDL or concatenated END format)
+Separates receptor and ligand by chain ID
+Runs per-frame calculations in parallel-friendly structure
+Current Status (2025–2026 version)
+This is a custom, research-oriented pipeline — not a production-ready package.
+Typical use case: post-processing of implicit solvent MD trajectories (GBIS) for protein–ligand or protein–protein binding estimation.
+
+Requirements
+
+Linux / macOS (tested on Linux clusters)
+VMD (with psfgen and autopsf plugins)
+NAMD2 or namd3 (for VDW energy evaluation)
+NACCESS (classic Lee-Richards SASA calculation)
+pdb2pqr (CHARMM force field support)
+Delphi (Delphi85 or newer — polar solvation solver)
+
+mmpbsa_pipeline/
+├── mmpbsa.sh               # main script
+├── Config/                 # NAMD configuration templates (if used)
+│   ├── par_all36_prot.prm
+│   ├── top_all36_prot.rtf
+│   └── ...
+├── complex_traj.pdb        # input multi-frame trajectory
+├── energies/               # output folder (created automatically)
+│   ├── SASA_*.txt
+│   ├── nonpol_*.txt
+│   ├── ele_*.txt
+│   ├── solv_*.txt
+│   ├── Vdw_*.txt
+│   └── 1/, 2/, ...         # per-frame temporary files
+└── README
+
+# Basic usage
+./mmpbsa.sh [trajectory.pdb] [ChainID] [ChainID] [Project_name]
+
+# Arguments:
+#   1. trajectory.pdb     multi-frame PDB file
+#   2. receptor chain ID  (usually A or protein chain)
+#   3. ligand chain ID    (usually B, C, or small molecule chain)
+#   4. prefix             output prefix (e.g. equil, prod)
+Example:
+./mmpbsa.sh complex_traj.pdb A B Jackpot
+
+
+Happy calculating!
+Jack_Swen (01_2026)
